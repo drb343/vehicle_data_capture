@@ -63,10 +63,21 @@ You should see:
 ```
 [100%] Built target sample
 ```
+# 5. Getting the pcap 
 
----
+Use `tcpdump` on the Raspberry Pi to record raw Hesai LiDAR packets:
 
-# 5. Modify test.cc file
+```bash
+sudo tcpdump -i eth0 -w your_file.pcap
+```
+- sudo: required for packet capture permissions
+- tcpdump: capture raw UDP packets from the network interface
+- -i eth0: listen on the Ethernet interface connected to the LiDAR
+- -w: write captured packets to specified file
+
+Copy your file over from Raspberry Pi into your working directory for PC/laptop
+
+# 6. Modify test.cc file
 
 Once your environment/Ubuntu 22.04 is set up, and you have cloned the repo, modify the test.cc file on your Desktop
 
@@ -85,7 +96,7 @@ param.input_param.pcap_path = "your_pcap_path_here";
 param.input_param.correction_file_path = "your_csv_path_here";
 ```
 
-# 5.1. Modify lidarCallback() to export .pcd
+# 6.1. Modify lidarCallback() to export .pcd
 
 Locate:
 
@@ -139,7 +150,7 @@ Save the file.
 
 ---
 
-# 6. Rebuild After Modifying Code
+# 7. Rebuild After Modifying Code
 
 Inside Docker:
 
@@ -150,7 +161,7 @@ make -j8
 
 ---
 
-# 7. Run the Decoder
+# 8. Run the Decoder
 
 ```bash
 ./sample
