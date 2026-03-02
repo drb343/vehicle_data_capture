@@ -24,4 +24,15 @@ python3 sbg_data_read.py
 
 The output of this script is a raw SBG binary log file (e.g., `.sbg` or `.bin`) that must be copied to your local machine
 
-## 2. 
+## 2. Launch Ubuntu 22.04 in Docker
+
+This SDK requires Ubuntu 22.04. Please follow the steps on the "hesai_lidar/README.md" for further instructions
+
+## 2.1 Clone the sbgECom repository
+
+```bash
+cd /workspace
+git clone https://github.com/SBG-Systems/sbgECom.git
+cd sbgECom
+```
+
