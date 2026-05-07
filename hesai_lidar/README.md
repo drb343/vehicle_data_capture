@@ -161,13 +161,13 @@ static bool saved = false;
 
 This ensures:
 - Every frame of the .pcap reading is converted into a .pcd
-- Every frame is timestamped according to Sepentrio-based timestamps (which can be converted to UTC)
+- Every frame is timestamped according to UNIX-based timestamps (which can be converted to UTC)
 
 Save the file.
 
 # 6.2. Timestamps
 
-In order to later produce timestamps that can be interpreted in both Sepentrio and UTC you need to add/locate this line in the `test.cc`
+In order to later produce timestamps that can be interpreted in both UNIX and UTC you need to add/locate this line in the `test.cc`
 
 ```cpp
   param.decoder_param.enable_packet_loss_tool = false;
@@ -179,7 +179,7 @@ In order to later produce timestamps that can be interpreted in both Sepentrio a
   //init lidar with param
   sample.Init(param);
 ```
-This is very important, as this parameter determines whether the LiDAR will use its global (Sepentrio/UTC) time for its frame timestamps or its own time from boot. The timestamp decoder parameter must be set to 1.
+This is very important, as this parameter determines whether the LiDAR will use its global (UNIX/UTC) time for its frame timestamps or its own time from boot. The timestamp decoder parameter must be set to 1.
 
 ---
 
