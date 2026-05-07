@@ -198,7 +198,7 @@ Output files should be:
 
 ---
 
-#9. Interpreting the Data and Post-Processing
+# 9. Interpreting the Data and Post-Processing
 
 You are now left with the point cloud for each frame, as well as the corresponding timestamp for each frame (start to finish). Using the script `lidar_utc.py` you can convert the frame timestamps into utc, which will output a new timestamp.csv file.
 
