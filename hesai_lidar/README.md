@@ -162,7 +162,6 @@ static bool saved = false;
 This ensures:
 - Every frame of the .pcap reading is converted into a .pcd
 - Every frame is timestamped according to Sepentrio-based timestamps (which can be converted to UTC)
-- 
 
 Save the file.
 
