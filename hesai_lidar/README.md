@@ -104,47 +104,65 @@ Locate:
 void lidarCallback(const LidarDecodedFrame<LidarPointXYZICRT> &frame)
 ```
 
-Add the following inside the function:
+Remove its contents and copy and paste this into the function:
 
 ```cpp
 static bool saved = false;
-if (saved) return;
 
-if (!saved && frame.points_num == 460800)
-{
-    std::ofstream pcd("/workspace/sdk_frame.pcd");
+  cur_frame_time = GetMicroTickCount();
+  if (last_frame_time == 0) last_frame_time = GetMicroTickCount();
+  uint32_t diff = (frame.fParam.IsMultiFrameFrequency() == 0) ? kMaxTimeInterval : kMaxTimeInterval * frame.multi_rate;
+  if (cur_frame_time - last_frame_time > diff) {
+    printf("Time between last frame and cur frame is: %u us\n", (cur_frame_time - last_frame_time));
+  }
+  last_frame_time = cur_frame_time;
 
-    pcd << "# .PCD v0.7 - Point Cloud Data file format\n";
-    pcd << "VERSION 0.7\n";
-    pcd << "FIELDS x y z intensity\n";
-    pcd << "SIZE 4 4 4 4\n";
-    pcd << "TYPE F F F F\n";
-    pcd << "COUNT 1 1 1 1\n";
-    pcd << "WIDTH " << frame.points_num << "\n";
-    pcd << "HEIGHT 1\n";
-    pcd << "VIEWPOINT 0 0 0 1 0 0 0\n";
-    pcd << "POINTS " << frame.points_num << "\n";
-    pcd << "DATA ascii\n";
+  if (frame.fParam.IsMultiFrameFrequency() == 0) {
+    printf("%ld -> frame:%d points:%u packet:%u start time:%lf end time:%lf\n",
+      GetMicroTimeU64(), frame.frame_index, frame.points_num, frame.packet_num,
+      frame.frame_start_timestamp, frame.frame_end_timestamp);
+  } else {
+    printf("%ld -> frame:%d points:%u packet:%u start time:%lf end time:%lf\n",
+      GetMicroTimeU64(), frame.multi_frame_index, frame.multi_points_num, frame.multi_packet_num,
+      frame.multi_frame_start_timestamp, frame.multi_frame_end_timestamp);
+  }
 
-    for (uint32_t i = 0; i < frame.points_num; ++i)
-    {
-        const auto &pt = frame.points[i];
-        pcd << pt.x << " "
-            << pt.y << " "
-            << pt.z << " "
-            << pt.intensity << "\n";
-    }
+  // Log Timestamps
+  double utc_start = frame.frame_start_timestamp;
+  double utc_end   = frame.frame_end_timestamp;
 
-    pcd.close();
-    saved = true;
-    printf("Saved SDK frame to sdk_frame.pcd\n");
-}
+  ts_log << frame.frame_index << "," << std::fixed << std::setprecision(6)
+        << utc_start << "," << utc_end << "\n";
+  ts_log.flush();
+ 
+
+
+  // Save all frames as PCD
+  std::string path = "/workspace/frames/frame_" + std::to_string(frame.frame_index) + ".pcd";
+  std::ofstream pcd(path);
+  pcd << "# .PCD v0.7 - Point Cloud Data file format\n";
+  pcd << "VERSION 0.7\n";
+  pcd << "FIELDS x y z intensity\n";
+  pcd << "SIZE 4 4 4 4\n";
+  pcd << "TYPE F F F F\n";
+  pcd << "COUNT 1 1 1 1\n";
+  pcd << "WIDTH " << frame.points_num << "\n";
+  pcd << "HEIGHT 1\n";
+  pcd << "VIEWPOINT 0 0 0 1 0 0 0\n";
+  pcd << "POINTS " << frame.points_num << "\n";
+  pcd << "DATA ascii\n";
+  for (uint32_t i = 0; i < frame.points_num; ++i) {
+    const auto &pt = frame.points[i];
+    pcd << pt.x << " " << pt.y << " " << pt.z << " " << pt.intensity << "\n";
+  }
+  pcd.close();
+  printf("Saved frame %d to %s\n", frame.frame_index, path.c_str());
 ```
 
 This ensures:
-- Partial frame 0 is ignored
-- Only a full 460,800-point rotation is saved
-- Output file is written to Desktop
+- Every frame of the .pcap reading is converted into a .pcd
+- Every frame is timestamped according to Sepentrio-based timestamps (which can be converted to UTC)
+- 
 
 Save the file.
 
@@ -175,8 +193,14 @@ Expected output:
 Saved SDK frame to sdk_frame.pcd
 ```
 
+Output files should be:
+- frame_*.pcd (quantity depends on length of run)
+- timestamps.csv (indexes every frame by timestamp with start and end time)
+
 ---
 
+#9. Interpreting the Data and Post-Processing
 
+You are now left with the point cloud for each frame, as well as the corresponding timestamp for each frame (start to finish). Using the script `lidar_utc.py` you can convert the frame timestamps into utc, which will output a new timestamp.csv file.
 
 
