@@ -170,9 +170,16 @@ Save the file.
 In order to later produce timestamps that can be interpreted in both Sepentrio and UTC you need to add/locate this line in the `test.cc`
 
 ```cpp
-param.decoder_param.use_timestamp_type = 1;
+  param.decoder_param.enable_packet_loss_tool = false;
+  param.decoder_param.socket_buffer_size = 262144000;
+  param.decoder_param.use_timestamp_type = 1;
+  system("mkdir -p /workspace/frames");
+  ts_log.open("/workspace/frames/timestamps.csv");
+  ts_log << "frame_index,frame_start_timestamp,frame_end_timestamp\n";
+  //init lidar with param
+  sample.Init(param);
 ```
-This is very important, as this parameter determines whether the LiDAR will use its global (Sepentrio/UTC) time for its frame timestamps or its own time from boot. The parameter must be set to 1.
+This is very important, as this parameter determines whether the LiDAR will use its global (Sepentrio/UTC) time for its frame timestamps or its own time from boot. The timestamp decoder parameter must be set to 1.
 
 ---
 
