@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Read the csv file and convert each timestamp to UTC
-df = pd.read_csv('frames_test/timestamps.csv')
+df = pd.read_csv('path_to_csv.csv')
 df['utc_start_str'] = pd.to_datetime(df['frame_start_timestamp'], unit='s', utc=True).dt.strftime('%Y-%m-%d %H:%M:%S.%f')
 df['utc_end_str']   = pd.to_datetime(df['frame_end_timestamp'],   unit='s', utc=True).dt.strftime('%Y-%m-%d %H:%M:%S.%f')
 
