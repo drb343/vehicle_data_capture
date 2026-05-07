@@ -165,6 +165,15 @@ This ensures:
 
 Save the file.
 
+# 6.2. Timestamps
+
+In order to later produce timestamps that can be interpreted in both Sepentrio and UTC you need to add/locate this line in the `test.cc`
+
+```cpp
+param.decoder_param.use_timestamp_type = 1;
+```
+This is very important, as this parameter determines whether the LiDAR will use its global (Sepentrio/UTC) time for its frame timestamps or its own time from boot. The parameter must be set to 1.
+
 ---
 
 # 7. Rebuild After Modifying Code
