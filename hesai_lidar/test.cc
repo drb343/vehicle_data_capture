@@ -4,7 +4,7 @@
 
 // #define LIDAR_PARSER_TEST
 // #define SERIAL_PARSER_TEST
-#define PCAP_PARSER_TEST
+#define PCAP_PARSER_TEST //only have this one defined
 // #define EXTERNAL_INPUT_PARSER_TEST
 // #define LIDAR_PARSER_TCP_TEST
 
@@ -45,7 +45,8 @@ double GetSBGStartUTC(const std::string& sbg_utc_path) {
 //log info, display frame message
 void lidarCallback(const LidarDecodedFrame<LidarPointXYZICRT> &frame) {
   static bool saved = false;
-
+  
+  //time alignment with the IMU/GNSS
   cur_frame_time = GetMicroTickCount();
   if (last_frame_time == 0) last_frame_time = GetMicroTickCount();
   uint32_t diff = (frame.fParam.IsMultiFrameFrequency() == 0) ? kMaxTimeInterval : kMaxTimeInterval * frame.multi_rate;
@@ -197,7 +198,7 @@ int main(int argc, char *argv[])
   sample.Init(param);
 
 #ifdef EXTERNAL_INPUT_PARSER_TEST
-  UdpFrame_t udp_packet_frame;  // Please implement the data import yourself.
+  UdpFrame_t udp_packet_frame;
   std::thread producer_thread(packetProducer, std::ref(sample), udp_packet_frame);
 #endif
 
